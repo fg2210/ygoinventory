@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Set Details - {{ selected_set.set_name }}{% endblock %}
+
+{% block content %}
+<!-- Sticky Header with Title and Update Button -->
+<div class="d-flex justify-content-between align-items-center sticky-header" style="position: sticky; top: 0; background-color: white; z-index: 1020; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <h1>{{ selected_set.set_name }}</h1>
+    <!-- Update Button beside the title -->
+    <a href="{{ url_for('index', set_code=selected_set.set_code) }}" class="btn btn-primary">Update</a>
+</div>
+
+<ul>
+    <li><strong>Set Code:</strong> {{ selected_set.set_code }}</li>
+    <li><strong>Release Date:</strong> {{ selected_set.tcg_date }}</li>
+</ul>
+
+<div class="row">
+    {% if matching_cards and matching_cards|length > 0 %}
+        {% for card_info in matching_cards|sort(attribute='card_code') %}
+            <div class="col-md-4 mb-4 card-container">
+                <div class="card mb-3 {% if card_info.highlight %}highlight-card{% endif %}" style="max-width: 540px;">
+                    <div class="row no-gutters">
+                        <div class="col-md-4 d-flex align-items-stretch">
+                            <img src="{{ card_info.card_image }}" class="card-img" alt="{{ card_info.card_name }}" style="height: auto; width: 100%; object-fit: contain;">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a href="{{ url_for('card_info', card_name=card_info.card_name) }}" style="color: inherit; text-decoration: none;">{{ card_info.card_name }}</a>
+                                </h5>
+                                <p class="card-text">
+                                    <strong>{{ card_info.card_code }}</strong><br>
+                                    {{ card_info.card_type }}<br>
+                                    {{ card_info.card_rarity if card_info.card_rarity != 'N/A' else 'N/A' }}<br>
+                                </p>
+
+                                <!-- Row of first set buttons with name attribute -->
+                                <!-- Edition buttons -->
+                                <div class="btn-group btn-group-toggle" data-toggle="buttons" style="margin-top: 10px;">
+                                    <button type="button" class="btn btn-outline-primary edition-button {% if user_card_info | selectattr('card_rarity_id', 'equalto', card_info.card_rarity_id) | selectattr('card_edition', 'equalto', '1ST') | list %}active{% endif %}" name="card_edition" value="1ST" data-edition="1ST">1ST</button>
+                                    <button type="button" class="btn btn-outline-secondary edition-button {% if user_card_info | selectattr('card_rarity_id', 'equalto', card_info.card_rarity_id) | selectattr('card_edition', 'equalto', 'UNL') | list %}active{% endif %}" name="card_edition" value="UNL" data-edition="UNL">UNL</button>
+                                    <button type="button" class="btn btn-outline-success edition-button {% if user_card_info | selectattr('card_rarity_id', 'equalto', card_info.card_rarity_id) | selectattr('card_edition', 'equalto', 'LIM') | list %}active{% endif %}" name="card_edition" value="LIM" data-edition="LIM">LIM</button>
+                                </div>
+
+                                <!-- Condition buttons -->
+                                <div class="btn-group btn-group-toggle" data-toggle="buttons" style="margin-top: 10px;">
+                                    <button type="button" class="btn btn-outline-info condition-button {% if user_card_info | selectattr('card_rarity_id', 'equalto', card_info.card_rarity_id) | selectattr('card_condition', 'equalto', 'NM') | list %}active{% endif %}" name="card_condition" value="NM" data-condition="NM">NM</button>
+                                    <button type="button" class="btn btn-outline-warning condition-button {% if user_card_info | selectattr('card_rarity_id', 'equalto', card_info.card_rarity_id) | selectattr('card_condition', 'equalto', 'EXC') | list %}active{% endif %}" name="card_condition" value="EXC" data-condition="EXC">EXC</button>
+                                    <button type="button" class="btn btn-outline-danger condition-button {% if user_card_info | selectattr('card_rarity_id', 'equalto', card_info.card_rarity_id) | selectattr('card_condition', 'equalto', 'GD') | list %}active{% endif %}" name="card_condition" value="GD" data-condition="GD">GD</button>
+                                    <button type="button" class="btn btn-outline-dark condition-button {% if user_card_info | selectattr('card_rarity_id', 'equalto', card_info.card_rarity_id) | selectattr('card_condition', 'equalto', 'PL') | list %}active{% endif %}" name="card_condition" value="PL" data-condition="PL">PL</button>
+                                    <button type="button" class="btn btn-outline-secondary condition-button {% if user_card_info | selectattr('card_rarity_id', 'equalto', card_info.card_rarity_id) | selectattr('card_condition', 'equalto', 'PO') | list %}active{% endif %}" name="card_condition" value="PO" data-condition="PO">PO</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No matching cards found.</p>
+    {% endif %}
+</div>
+
+<style>
+    .card {
+        transition: transform 0.3s;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
+    }
+
+    .card-img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    /* Styling for buttons */
+    .edition-button, .condition-button {
+        margin-right: 5px;
+    }
+
+    /* Active button styling */
+    .edition-button.active, .condition-button.active {
+        color: #fff;
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    /* Sticky Header */
+    .sticky-header {
+        position: sticky;
+        top: 0;
+        background-color: white;
+        z-index: 1020;
+        padding: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    /* Highlight the card */
+    .highlight-card {
+        background-color: transparent;
+        border: 1px solid #ddd;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Add event listeners to all edition and condition buttons
+        document.querySelectorAll('.edition-button, .condition-button').forEach(button => {
+            button.addEventListener('click', (event) => {
+                // Check if the button is already active
+                if (event.target.classList.contains('active')) {
+                    // If it is active, remove the active class (return to normal state)
+                    event.target.classList.remove('active');
+                } else {
+                    // If it is not active, activate the button and deactivate others
+                    const siblings = event.target.parentElement.children;
+                    for (let sibling of siblings) {
+                        sibling.classList.remove('active');
+                    }
+                    event.target.classList.add('active');
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}

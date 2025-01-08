@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}Sets{% endblock %}</title>
+    <!-- Sandstone theme from Bootswatch -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.2/sandstone/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+
+        /* Side Navbar */
+        .side-navbar {
+            height: 100vh;
+            position: fixed;
+            flex-direction: column;
+            width: 250px;
+            padding-top: 20px; /* Space for top navbar */
+            margin-top: 10px; /* Added extra margin to create space from the top navbar */
+        }
+        /* Ensure links in the side navbar are visible and spaced */
+        .side-navbar .nav-link {
+            color: #fff; /* Ensure the text is white for readability */
+            padding: 10px 20px; /* Add padding for better spacing */
+            text-align: left;
+        }
+        .side-navbar .nav-link:hover {
+            background-color: #0275d8; /* Add hover effect */
+        }
+        /* Content area next to the side navbar */
+        .content {
+            margin-left: 250px; /* Align with side navbar */
+            margin-top: 70px;   /* Adjust for top navbar height with extra space */
+            padding: 20px;
+            width: calc(100% - 250px); /* Ensure content fits without horizontal scroll */
+        }
+        /* Ensure top navbar and its elements are responsive */
+        .top-navbar .form-control {
+            width: auto; /* Allows search bar to adjust its size automatically */
+            flex-grow: 1; /* Ensures the search bar expands */
+        }
+
+        .dropdown-menu {
+            min-width: 200px;
+        }
+    </style>
+
+    <!-- Include DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css"/>
+
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+
+    <!-- Include DataTables JS -->
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+</head>
+<body>
+
+    <!-- Banner (only shown when user is logged in) -->
+    {% if session.get('username') %}
+    <header>
+        <div class="text-light">
+            Welcome back, {{ session['username'] }}!
+        </div>
+    </header>
+    {% endif %}
+
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top top-navbar">
+      <div class="container-fluid">
+        <a class="navbar-brand">YGOInventory</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTop" aria-controls="navbarTop" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTop">
+
+          <!-- Welcome message -->
+          {% if session.get('username') %}
+            <span class="navbar-text text-light me-3">
+              Welcome back {{ session['username'] }}
+            </span>
+          {% endif %}
+
+          <!-- Search Bar and My Account Button -->
+          <form class="d-flex me-3" role="search" style="width: 100%;">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+          </form>
+
+          <!-- My Account Dropdown -->
+          {% if session.get('username') %}
+          <div class="dropdown">
+            <button class="btn btn-light dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              My Account
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="accountDropdown">
+              <li><a class="dropdown-item" href="{{ url_for('logout') }}">Log Out</a></li>
+            </ul>
+          </div>
+          {% else %}
+          <a href="{{ url_for('index') }}" class="btn btn-light">My Account</a>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+
+    <!-- Side Navbar -->
+    <nav class="navbar side-navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+        <div class="container-fluid flex-column">
+            <a class="navbar-brand" href="#">YGOInventory</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse flex-column" id="navbarColor01">
+                <ul class="navbar-nav flex-column me-auto">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('sets') }}">Sets</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">My Collection</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content area -->
+    <div class="content">
+        {% block content %}
+        <!-- This block will be filled in by child templates -->
+        {% endblock %}
+    </div>
+
+    <!-- Include Bootstrap JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

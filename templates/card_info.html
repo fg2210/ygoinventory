@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Card Details - {{ card_details.card_name }}{% endblock %}
+
+{% block content %}
+<h1>{{ card_details.card_name }}</h1>
+
+<div class="row">
+    <!-- Image on the left -->
+    <div class="col-md-4">
+        <div class="sticky-image">
+            <img src="{{ card_details.card_image }}" alt="{{ card_details.card_name }}" class="img-fluid" style="width: 500px; height: auto;">
+            <style>
+                /* Make the image sticky */
+                .sticky-image {
+                    position: sticky;
+                    top: 0;
+                    align-self: flex-start; /* Ensure it aligns to the top when scrolled */
+                }
+
+                /* Ensure the content on the right scrolls */
+                .scrollable-content {
+                    max-height: 80vh; /* Limit height to viewport size */
+                    overflow-y: auto; /* Enable vertical scrolling */
+                    padding: 15px; /* Add padding for better spacing */
+                }
+            </style>
+        </div>
+    </div>
+
+    <!-- Card details on the right -->
+    <div class="col-md-8">
+        <div class="scrollable-content">
+            <!-- Card details -->
+            <ul>
+                <li><strong>Card Name:</strong> {{ card_details.card_name }}</li>
+                <li><strong>Card Attribute:</strong> {{ card_details.card_attribute }}</li>
+                <li><strong>Card ATK:</strong> {{ card_details.card_atk }}</li>
+                <li><strong>Card DEF:</strong> {{ card_details.card_def }}</li>
+                <li><strong>Card Level:</strong> {{ card_details.card_level }}</li>
+                <li><strong>Card Type:</strong> {{ card_details.card_type }}</li>
+            </ul>
+
+            <!-- Unique card codes displayed in a card -->
+            <h2>Appears in:</h2>
+            <div class="row">
+                {% for card_code in unique_card_codes %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card" style="max-width: 100%;">
+                            <div class="card-body text-center"> <!-- Centered text -->
+                                <h5 class="card-text" style="font-size: 1.25rem; font-weight: bold;">
+                                    <a href="{{ url_for('set_list', set_code=card_code.set_code) }}" style="color: inherit; text-decoration: none;">{{ card_code.card_code }}</a>
+                                </h5> <!-- Link to set_list with set_code -->
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.3s;
+        width: 100%; /* Ensure cards take full width of the column */
+    }
+    .card:hover {
+        transform: scale(1.05);
+    }
+    .card-img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+    }
+</style>
+
+{% endblock %}

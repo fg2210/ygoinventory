@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Card Sets</h1>
+
+<!-- Flash Message for Login Success -->
+<script>
+    $(document).ready(function() {
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == 'success' %}
+                        alert("Login Successful!");  // Display dialog box for successful login
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    });
+</script>
+
+<!-- Tab Navigation -->
+<ul class="nav nav-tabs">
+    {% for year in unique_years if year <= current_date.year %}
+        <li class="nav-item">
+            <a class="nav-link {% if loop.first %}active{% endif %}" id="year{{ year }}-tab" data-bs-toggle="tab" href="#year{{ year }}" role="tab">{{ year }}</a>
+        </li>
+    {% endfor %}
+</ul>
+
+<!-- Tab Content -->
+<div class="tab-content">
+    {% for year in unique_years if year <= current_date.year %}
+        <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="year{{ year }}" role="tabpanel">
+            <h2>{{ year }} Card Sets</h2>
+            <div class="row">
+                {% for set in card_sets if set.tcg_date.year == year and set.tcg_date <= current_date %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card mb-3" style="max-width: 540px;">
+                            <div class="row no-gutters">
+                                <div class="col-md-4 d-flex align-items-stretch">
+                                    <img src="{{ set.set_image }}" alt="{{ set.set_image }}" class="set-logo">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <a href="{{ url_for('set_list', set_code=set.set_code) }}" style="color: inherit; text-decoration: none;">
+                                                {{ set.set_name }}
+                                            </a>
+                                        </h5>
+                                        <p class="card-text">
+                                            <strong>{{ set.set_code }}</strong><br>
+                                            {{ set.tcg_date }}<br>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Custom Styles -->
+<style>
+    .card { transition: transform 0.3s; }
+    .card:hover { transform: scale(1.05); }
+    .card-img { height: auto; width: 100%; object-fit: cover; }
+
+    .set-logo {
+        max-width: 150px; /* Adjust as necessary */
+        max-height: 150px; /* Adjust as necessary */
+        object-fit: contain; /* Ensures the image keeps its aspect ratio */
+        display: block;
+        margin: 0 auto; /* Centers the image */
+    }
+</style>
+
+{% endblock %}
