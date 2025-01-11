@@ -30,6 +30,9 @@ db.init_app(app)
 
 # Models
 class InventoryCard(db.Model):
+    # Primary Key: card_rarity_id
+    # Links to UserCardData by card_rarity_id
+    # Links to SetData by set_code
     __tablename__ = "CardData"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     card_name: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
@@ -53,9 +56,34 @@ class InventoryCard(db.Model):
 
 class Users(UserMixin, db.Model):
     __tablename__ = "UserData"
+    # Primary Key: user_id
+    # Links to UserCardData user_id
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     email: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String, nullable=False)
+
+class Sets(db.Model):
+    __tablename__ = "SetData"
+    # Primary Key: set_code
+    # Links to CardData by set_code
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    set_code: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    set_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    set_type: Mapped[str] = mapped_column(String(255), nullable=False)
+    set_date: Mapped[datetime] = mapped_column(datetime)
+
+class UserCardData(db.Model):
+    __tablename__ = "UserCardData"
+    # Links to UserCardData by card_rarity_id
+    # Links to CardData by card_rarity_id
+    # Links to UserData by user_id
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    set_code: Mapped[str] = mapped_column(String(255), nullable=False)
+    card_edition: Mapped[str] = mapped_column(String(255), nullable=False)
+    card_condition: Mapped[str] = mapped_column(String(255), nullable=False)
+    card_rarity_id: Mapped[str] = mapped_column(String(255), nullable=False)
+
 
 # Gravatar
 gravatar = Gravatar(app,
